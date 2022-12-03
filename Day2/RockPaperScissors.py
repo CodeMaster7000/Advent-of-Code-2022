@@ -16,5 +16,5 @@ wanted_outcomes = {
 total_score_p2 = 0
 for round in rounds:
     total_score_p2 += wanted_outcomes[round]
-print("Part 1 answer: ", total_score_p1)
-print("Part 2 answer: ", total_score_p2)
+print("Part 1 solution: ", total_score_p1)
+print("Part 2 solution: ", total_score_p2)
