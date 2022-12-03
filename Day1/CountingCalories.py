@@ -22,5 +22,5 @@ for item in data:
     elif count > max3:
         max3 = count    
 
-print("Part 1 answer: ", max)
-print("Part 2 answer: ", max+max2+max3)
+print("Part 1 solution: ", max)
+print("Part 2 solution: ", max+max2+max3)
