@@ -9,7 +9,7 @@ def adjust(H,T):
     elif abs(dc)>=2:
         T = (H[0], H[1]-1 if T[1]<H[1] else H[1]+1)
     return T
-lines = open(argv[1] if len(argv)>1 else "Rope Bridge.txt").read().strip().split("\n")
+lines = open(argv[1] if len(argv)>1 else "RopeBridge.in").read().strip().split("\n")
 H = (0, 0)
 T = [(0, 0) for _ in range(9)]
 dirs = {"U":(-1, 0), "R":(0, 1), "D":(1, 0), "L":(0, -1)}
