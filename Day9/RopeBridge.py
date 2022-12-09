@@ -6,8 +6,6 @@ lines = [x for x in data.split('\n')]
 def adjust(H,T):
     dr = (H[0]-T[0])
     dc = (H[1]-T[1])
-    if abs(dr)<=1 and abs(dc)<=1:
-        pass
     elif abs(dr)>=2 and abs(dc)>=2:
         T = (H[0]-1 if T[0]<H[0] else H[0]+1, H[1]-1 if T[1]<H[1] else H[1]+1)
     elif abs(dr)>=2:
