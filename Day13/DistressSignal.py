@@ -1,63 +1,61 @@
-from __future__ import annotations
-from pathlib import Path
-from ast import literal_eval
-SCRIPT_DIR = Path(__file__).parent
-INPUT_FILE = Path(SCRIPT_DIR, "DistressSignal.in")
-class Packet():   
-    def __init__(self, value) -> None:
-        self.value = value        
-    def __lt__(self, other: Packet) -> bool:
-        if isinstance(self.value, int) and isinstance(other.value, int):
-            if self.value < other.value:
-                return True 
-            if other.value < self.value:
-                return False
-        if isinstance(self.value, int) and isinstance(other.value, list):
-            new_item = Packet([self.value]) 
-            return new_item < other
-        if isinstance(self.value, list) and isinstance(other.value, int):
-            new_item = Packet([other.value]) 
-            return self < new_item
-        if isinstance(self.value, list) and isinstance(other.value, list):
-            compare_count = 0
-            for val in zip(self.value, other.value): 
-                compare_count += 1
-                if val[0] == val[1]:
-                    continue
-                return Packet(val[0]) < Packet(val[1])
-            return len(self.value) < len(other.value)       
-    def __repr__(self) -> str:
-        return str(self.value)    
-class Pair():
-    def __init__(self, left: Packet, right: Packet) -> None:
-        self.left = left
-        self.right = right
-    def __repr__(self):
-        return f"Pair(l={self.left}, r={self.right})"
-def main():
-    with open(INPUT_FILE, mode="rt") as f:
-        data = f.read()      
-    pairs = get_pairs(data)
-    right_order = []    
-    for i, pair in enumerate(pairs, start=1):
-        if pair.left < pair.right:
-            right_order.append(i)      
-    print(f"Part 1 solution: {sum(right_order)}")
-    all_packets = get_all_packets(data)
-    div_two, div_six = Packet([[2]]), Packet([[6]])
-    all_packets.append(div_two)
-    all_packets.append(div_six)
-    sorted_items = sorted(all_packets)
-    loc_div_two = sorted_items.index(div_two) + 1 
-    loc_div_six = sorted_items.index(div_six) + 1
-    print(f"Part 2 solution: {loc_div_two*loc_div_six}")
-def get_pairs(data: str) -> list[Pair]:
-    pairs: list[Pair] = []
-    blocks = data.split("\n\n")  
-    for block in blocks:
-        lines = block.splitlines()
-        pairs.append(Pair(Packet(literal_eval(lines[0])), Packet(literal_eval(lines[1]))))       
-    return pairs
-def get_all_packets(data: str) -> list[Packet]:
-    lines = data.splitlines()
-    return [Packet(literal_eval(line)) for line in lines if line]
+import collections
+import functools
+import bisect
+with open((__file__.rstrip("DistressSignal.py")+"DistressSignal.in"), 'r') as input_file:
+    input = input_file.readlines()
+def addToList(idx, str) -> tuple:
+    res = collections.deque()
+    while idx < len(str):
+        if str[idx] == "[":
+            newList = addToList(idx+1, str)
+            idx = newList[0]
+            res.append(newList[1])
+        elif str[idx] == "]":
+            return (idx, res)
+        elif str[idx].isnumeric():
+            s = str[idx]
+            if str[idx + 1].isnumeric():
+                s += str[idx + 1]
+                idx += 1
+            res.append(int(s))
+        idx += 1
+    return (len(str),res)
+def compare_lists(vals1, vals2) ->int:
+    while vals1 and vals2:
+        val1 = vals1.popleft()
+        val2 = vals2.popleft()
+        if isinstance(val1, int) and isinstance(val2, int):
+            if val1 < val2:
+                return 1
+            elif val1 > val2:
+                return -1
+        else:
+            val1 = collections.deque([val1]) if isinstance(val1, int) else val1
+            val2 = collections.deque([val2]) if isinstance(val2, int) else val2
+            subList = compare_lists(val1, val2)
+            if 0 != subList:
+                return subList
+    if vals1:
+        return -1
+    return 1 if vals2 else 0
+def check_in_order(str1, str2):
+    q1, q2 =addToList(0, str1)[1], addToList(0, str2)[1]
+    return compare_lists(q1, q2)
+res = 0
+idx = 0
+lines = []
+for i in range(0, len(input), 3):
+    idx += 1
+    if check_in_order(input[i].strip(), input[i +1].strip()):
+        res += idx
+        lines.append(input[i].strip())
+        lines.append(input[i+1].strip())
+print("Part 1 solution: "+ str(res))
+lines.append('[[2]]')
+lines.append('[[6]]')
+lines.sort(key=functools.cmp_to_key(check_in_order),reverse=True)
+res = 1
+for i, line in enumerate(lines):
+    if line == '[[2]]' or line == '[[6]]':
+        res *= (i + 1)
+print("Part 2 solution: "+ str(res))
