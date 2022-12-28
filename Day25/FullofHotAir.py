@@ -29,3 +29,7 @@ with open("./FullofHotAir.in") as fin:
          n //= 5 
      return res[::-1] 
  print("Solution:",int_to_snafu(ans))
+
+print("\n")
+print("What a journey it has been. 25 challenges. Some days easy, some head-scratchingly hard. Thanks to all who have been following along with me.")
+print("Merry Christmas and a Happy New Year!")
